@@ -96,7 +96,9 @@ public class ProductsServiceImpl implements ProductsService {
         try {
             validarProductoDTO(dto);
             Products product = convertToEntity(dto);
-
+            if (dto.getId() == null && productsRepository.existsByCodAndEnabledTrue(dto.getCod())) {
+                throw new IllegalArgumentException("El código ya está registrado");
+            }
             if (imageFile != null && !imageFile.isEmpty()) {
                 String imageUrl = firebaseStorageService.uploadFile(imageFile);
                 product.setImageUrl(imageUrl);
@@ -131,6 +133,56 @@ public class ProductsServiceImpl implements ProductsService {
         response.put("status", lista.isEmpty() ? HttpStatus.NOT_FOUND : HttpStatus.OK);
         response.put("fecha", new Date());
         return ResponseEntity.status(lista.isEmpty() ? HttpStatus.NOT_FOUND : HttpStatus.OK).body(response);
+    }
+
+    @Override
+    public ResponseEntity<Map<String, Object>> getAllProductsEnabledTrue() {
+        Map<String, Object> response = new HashMap<>();
+        List<ProductDTO> lista = productsRepository.findByEnabledTrue()
+                .stream().map(this::convertToDTO)
+                .collect(Collectors.toList());
+        response.put("mensaje", lista.isEmpty() ? "No hay productos activos" : "Lista de productos");
+        response.put("data", lista);
+        response.put("status", lista.isEmpty() ? HttpStatus.NOT_FOUND : HttpStatus.OK);
+        response.put("fecha", new Date());
+        return ResponseEntity.status(lista.isEmpty() ? HttpStatus.NOT_FOUND : HttpStatus.OK).body(response);
+    }
+
+    @Override
+    public ResponseEntity<Map<String, Object>> getProductByIdEnabledTrue(Long id) {
+        Map<String, Object> response = new HashMap<>();
+        Optional<Products> optional = productsRepository.findByIdAndEnabledTrue(id);
+
+        if (optional.isPresent()) {
+            response.put("producto", convertToDTO(optional.get()));
+            response.put("mensaje", "Producto encontrado");
+            response.put("status", HttpStatus.OK);
+        } else {
+            response.put("mensaje", "Producto no encontrado con ID: " + id);
+            response.put("status", HttpStatus.NOT_FOUND);
+        }
+        response.put("fecha", new Date());
+        return ResponseEntity.status((HttpStatus) response.get("status")).body(response);
+    }
+
+    @Override
+    public ResponseEntity<Map<String, Object>> buscarPorNombreOCodigoEnabledTrue(String termino) {
+        Map<String, Object> response = new HashMap<>();
+        List<ProductDTO> lista = productsRepository
+                .findByNameContainingIgnoreCaseAndEnabledTrueOrCodContainingIgnoreCaseAndEnabledTrue(termino, termino)
+                .stream().map(this::convertToDTO)
+                .collect(Collectors.toList());
+
+        if (!lista.isEmpty()) {
+            response.put("mensaje", "Resultados encontrados");
+            response.put("data", lista);
+            response.put("status", HttpStatus.OK);
+        } else {
+            response.put("mensaje", "No se encontraron coincidencias");
+            response.put("status", HttpStatus.NOT_FOUND);
+        }
+        response.put("fecha", new Date());
+        return ResponseEntity.status((HttpStatus) response.get("status")).body(response);
     }
 
     @Override
@@ -259,9 +311,13 @@ public class ProductsServiceImpl implements ProductsService {
         if (dto.getCod() == null || dto.getCod().trim().isEmpty()) {
             throw new IllegalArgumentException("El código del producto es obligatorio");
         }
-        if (dto.getId() == null && productsRepository.existsByCod(dto.getCod())) {
-            throw new IllegalArgumentException("El código ya esta registrado");
+//        if (dto.getId() == null && productsRepository.existsByCod(dto.getCod())) {
+//            throw new IllegalArgumentException("El código ya esta registrado");
+//        }
+        if (dto.getId() == null && productsRepository.existsByCodAndEnabledTrue(dto.getCod())) {
+            throw new IllegalArgumentException("El código ya está registrado");
         }
+
     }
 
     private void validarYear(ProductDTO dto) {

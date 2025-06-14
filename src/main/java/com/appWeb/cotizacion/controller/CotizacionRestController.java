@@ -57,12 +57,6 @@ public class CotizacionRestController {
         return cotizacionService.actualizarCotizacion(dto);
     }
 
-    // Eliminar cotización
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Map<String, Object>> eliminarCotizacion(@PathVariable Long id) {
-        return cotizacionService.eliminarCotizacion(id);
-    }
-
     // Buscar vehículo por placa
     @GetMapping("/vehiculo/placa/{placa}")
     public ResponseEntity<Map<String, Object>> buscarVehiculoPorPlaca(@PathVariable String placa) {
@@ -90,6 +84,13 @@ public class CotizacionRestController {
     // Buscar productos por nombre o código
     @GetMapping("/productos/buscar/{termino}")
     public ResponseEntity<Map<String, Object>> buscarProductos(@PathVariable String termino) {
-        return productService.buscarPorNombreOCodigo(termino);
+        return productService.buscarPorNombreOCodigoEnabledTrue(termino);
     }
+
+    // Eliminar cotización
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Map<String, Object>> eliminarCotizacion(@PathVariable Long id) {
+        return cotizacionService.eliminarCotizacion(id);
+    }
+
 }

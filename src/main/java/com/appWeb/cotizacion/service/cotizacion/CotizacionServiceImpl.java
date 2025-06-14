@@ -91,7 +91,6 @@ public class CotizacionServiceImpl implements CotizacionService {
             productoDTO.setSalePrice(detalle.getProducto().getSalePrice());
             productoDTO.setCostPrice(detalle.getProducto().getCostPrice());
             productoDTO.setDealerPrice(detalle.getProducto().getCostDealer());
-
             detalleDTO.setNombreProducto(productoDTO.getName());
             detalleDTO.setProductoId(productoDTO.getId());
             detalleDTO.setCantidad(detalle.getCantidad());
@@ -119,7 +118,10 @@ public class CotizacionServiceImpl implements CotizacionService {
     @Override
     public ResponseEntity<Map<String, Object>> listarCotizaciones() {
         Map<String, Object> res = new HashMap<>();
-        List<Cotizacion> lista = cotizacionRepository.findAll(Sort.by(Sort.Direction.DESC, "fecha"));
+        List<Cotizacion> lista = cotizacionRepository.findByEstadoNot(
+                EstadoCotizacion.ELIMINADA, Sort.by(Sort.Direction.DESC, "fecha")
+        );
+//        List<Cotizacion> lista = cotizacionRepository.findAll(Sort.by(Sort.Direction.DESC, "fecha"));
         List<CotizacionResponseDTO> dtos = lista.stream().map(this::mapToResponseDTO).toList();
 
         res.put("mensaje", dtos.isEmpty() ? "No hay cotizaciones registradas" : "Lista de cotizaciones");
@@ -132,7 +134,8 @@ public class CotizacionServiceImpl implements CotizacionService {
     @Override
     public ResponseEntity<Map<String, Object>> obtenerCotizacionPorId(Long id) {
         Map<String, Object> res = new HashMap<>();
-        Optional<Cotizacion> cot = cotizacionRepository.findById(id);
+        Optional<Cotizacion> cot = cotizacionRepository.findByIdAndEstadoNot(id, EstadoCotizacion.ELIMINADA);
+//        Optional<Cotizacion> cot = cotizacionRepository.findById(id);
         if (cot.isPresent()) {
             res.put("mensaje", "Cotización encontrada");
             res.put("data", mapToResponseDTO(cot.get()));
@@ -201,8 +204,11 @@ public class CotizacionServiceImpl implements CotizacionService {
         Map<String, Object> res = new HashMap<>();
 
         try {
-            Cotizacion cot = cotizacionRepository.findById(dto.getId())
-                    .orElseThrow(() -> new EntityNotFoundException("Cotización no encontrada"));
+            Cotizacion cot = cotizacionRepository.findByIdAndEstadoNot(dto.getId(), EstadoCotizacion.ELIMINADA)
+                    .orElseThrow(() -> new EntityNotFoundException("No se puede actualizar: Cotización no encontrada o eliminada"));
+
+//            Cotizacion cot = cotizacionRepository.findById(dto.getId())
+//                    .orElseThrow(() -> new EntityNotFoundException("Cotización no encontrada"));
 
             // Limpiar detalles anteriores
             detalleCotizacionRepository.deleteAllByCotizacionId(cot.getId());

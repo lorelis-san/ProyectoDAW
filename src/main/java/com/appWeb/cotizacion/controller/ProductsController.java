@@ -33,13 +33,15 @@ public class ProductsController {
     // GET - por ID
     @GetMapping("/{id}")
     public ResponseEntity<Map<String, Object>> obtenerProducto(@PathVariable Long id) {
-        return productsService.getProductById(id);
+//        return productsService.getProductById(id);
+        return productsService.getProductByIdEnabledTrue(id);
     }
 
     // GET - búsqueda por código o nombre
     @GetMapping("/buscar")
     public ResponseEntity<Map<String, Object>> buscar(@RequestParam String termino) {
-        return productsService.buscarPorNombreOCodigo(termino);
+//        return productsService.buscarPorNombreOCodigo(termino);
+        return productsService.buscarPorNombreOCodigoEnabledTrue(termino);
     }
 
     // POST - guardar producto

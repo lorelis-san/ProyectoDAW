@@ -1,6 +1,7 @@
 package com.appWeb.cotizacion.service.cotizacion;
 
 import com.appWeb.cotizacion.dto.cotizacion.DetalleCotizacionDTO;
+import com.appWeb.cotizacion.enums.EstadoCotizacion;
 import com.appWeb.cotizacion.model.cotizacion.Cotizacion;
 import com.appWeb.cotizacion.model.cotizacion.DetalleCotizacion;
 import com.appWeb.cotizacion.model.productos.Products;
@@ -12,6 +13,8 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -46,30 +49,31 @@ public class DetalleCotizacionServiceImpl implements DetalleCotizacionService {
     public ResponseEntity<Map<String, Object>> agregarDetalle(Long cotizacionId, DetalleCotizacionDTO dto) {
         Map<String, Object> res = new HashMap<>();
 
-        Optional<Cotizacion> cotOpt = cotizacionRepo.findById(cotizacionId);
-        Optional<Products> prodOpt = productsRepo.findById(dto.getProductoId());
+        Cotizacion cotizacion = cotizacionRepo.findById(cotizacionId)
+                .orElseThrow(() -> new RuntimeException("Cotización no encontrada"));
 
-        if (cotOpt.isEmpty() || prodOpt.isEmpty()) {
-            res.put("mensaje", "Cotización o producto no encontrados");
-            res.put("status", HttpStatus.NOT_FOUND);
-            res.put("fecha", new Date());
-            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(res);
-        }
+        Products producto = productsRepo.findById(dto.getProductoId())
+                .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
 
-        DetalleCotizacion detalle = new DetalleCotizacion(
-                cotOpt.get(),
-                prodOpt.get(),
-                dto.getCantidad(),
-                dto.getPrecioUnitario()
-        );
+        DetalleCotizacion nuevoDetalle = new DetalleCotizacion(cotizacion, producto, dto.getCantidad(), dto.getPrecioUnitario());
+        detalleRepo.save(nuevoDetalle);
 
-        detalleRepo.save(detalle);
+        // ✅ Recalcular totales
+        List<DetalleCotizacion> detallesActivos = detalleRepo.findByCotizacionIdAndEnabledTrue(cotizacionId);
+        BigDecimal nuevoSubtotal = detallesActivos.stream()
+                .map(DetalleCotizacion::getSubtotal)
+                .reduce(BigDecimal.ZERO, BigDecimal::add);
 
+        cotizacion.setSubtotal(nuevoSubtotal);
+        cotizacion.setIgv(BigDecimal.ZERO); // Puedes cambiar si aplicas IGV
+        cotizacion.setTotal(nuevoSubtotal);
+        cotizacion.setFechaModificacion(LocalDateTime.now());
+        cotizacion.setEstado(EstadoCotizacion.MODIFICADA);
+        cotizacionRepo.save(cotizacion);
         res.put("mensaje", "Detalle agregado correctamente");
-        res.put("detalle", convertToDTO(detalle));
+        res.put("data", dto);
         res.put("status", HttpStatus.CREATED);
         res.put("fecha", new Date());
-
         return ResponseEntity.status(HttpStatus.CREATED).body(res);
     }
 

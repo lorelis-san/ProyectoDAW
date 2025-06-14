@@ -10,6 +10,9 @@ import java.util.Map;
 public interface ProductsService {
     ResponseEntity<Map<String, Object>> saveProduct(ProductDTO dto, MultipartFile imageFile);
     ResponseEntity<Map<String, Object>> getAllProducts();
+    ResponseEntity<Map<String, Object>> getAllProductsEnabledTrue();
+    ResponseEntity<Map<String, Object>> getProductByIdEnabledTrue(Long id);
+    ResponseEntity<Map<String, Object>> buscarPorNombreOCodigoEnabledTrue(String termino);
     ResponseEntity<Map<String, Object>> getProductById(Long id);
     ResponseEntity<Map<String, Object>> updateProduct(ProductDTO dto, MultipartFile imageFile);
     ResponseEntity<Map<String, Object>> deleteProduct(Long id);
