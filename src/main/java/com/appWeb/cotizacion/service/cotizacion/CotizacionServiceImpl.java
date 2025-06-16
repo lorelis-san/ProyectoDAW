@@ -192,7 +192,7 @@ public class CotizacionServiceImpl implements CotizacionService {
             res.put("data", mapToResponseDTO(guardada));
             res.put("status", HttpStatus.CREATED);
         } catch (RuntimeException ex) {
-            throw ex; // dejar que Spring maneje el rollback y el error
+            throw ex;
         } catch (Exception e) {
             res.put("mensaje", "Error al registrar cotización: " + e.getMessage());
             res.put("status", HttpStatus.BAD_REQUEST);
@@ -207,56 +207,55 @@ public class CotizacionServiceImpl implements CotizacionService {
         Map<String, Object> res = new HashMap<>();
 
         try {
-            Cotizacion cot = cotizacionRepository.findByIdAndEstadoNot(dto.getId(), EstadoCotizacion.ELIMINADA)
-                    .orElseThrow(() -> new EntityNotFoundException("No se puede actualizar: Cotización no encontrada o eliminada"));
 
-//            Cotizacion cot = cotizacionRepository.findById(dto.getId())
-//                    .orElseThrow(() -> new EntityNotFoundException("Cotización no encontrada"));
-
-            // Limpiar detalles anteriores
-            detalleCotizacionRepository.deleteAllByCotizacionId(cot.getId());
-
-            // Usuario que modifica
-            String email = SecurityContextHolder.getContext().getAuthentication().getName();
-            User user = userRepository.findOneByEmail(email)
-                    .orElseThrow(() -> new RuntimeException("Usuario no autenticado"));
-            cot.setUserModificador(user);
-
-//            // Detalles nuevos
-//            List<DetalleCotizacion> nuevos = new ArrayList<>();
-//            for (DetalleCotizacionDTO d : dto.getDetalles()) {
-//                Products prod = productsRepository.findById(d.getProductoId())
-//                        .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
-//                DetalleCotizacion det = new DetalleCotizacion(cot, prod, d.getCantidad(), d.getPrecioUnitario());
-//                nuevos.add(det);
-//            }
-
-            // Agregar nuevos detalles con lógica de negocio
-            for (DetalleCotizacionDTO d : dto.getDetalles()) {
-                Products prod = productsRepository.findById(d.getProductoId())
-                        .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
-                DetalleCotizacion det = new DetalleCotizacion(cot, prod, d.getCantidad(), d.getPrecioUnitario());
-                cot.agregarDetalle(det); // clave: lógica de agregación interna
+            if (dto.getDetalles() == null || dto.getDetalles().isEmpty()) {
+                throw new IllegalArgumentException("La cotización debe contener al menos un producto.");
             }
 
-            cot.calcularTotales();
-            cot.setFechaModificacion(LocalDateTime.now());
+            Cotizacion cot = cotizacionRepository.findByIdAndEstadoNot(dto.getId(), EstadoCotizacion.ELIMINADA)
+                    .orElseThrow(() -> new EntityNotFoundException("No se puede actualizar: Cotización no encontrada o eliminada."));
+
+
+            String email = SecurityContextHolder.getContext().getAuthentication().getName();
+            User user = userRepository.findOneByEmail(email)
+                    .orElseThrow(() -> new RuntimeException("Usuario no autenticado."));
+            cot.setUserModificador(user);
+
+
+            cot.getDetalles().clear();
+
+
+            for (DetalleCotizacionDTO d : dto.getDetalles()) {
+                Products producto = productsRepository.findById(d.getProductoId())
+                        .orElseThrow(() -> new RuntimeException("Producto no encontrado (ID: " + d.getProductoId() + ")"));
+
+                DetalleCotizacion detalle = new DetalleCotizacion(cot, producto, d.getCantidad(), d.getPrecioUnitario());
+                cot.agregarDetalle(detalle);
+            }
+
             cot.setEstado(EstadoCotizacion.MODIFICADA);
             cot.setObservaciones(dto.getObservaciones());
+            cot.setFechaModificacion(LocalDateTime.now());
+            cot.calcularTotales();
 
-            cotizacionRepository.save(cot);
+            Cotizacion cotActualizada = cotizacionRepository.save(cot);
 
-            res.put("mensaje", "Cotización actualizada");
-            res.put("data", mapToResponseDTO(cot));
+            res.put("mensaje", "Cotización actualizada correctamente.");
+            res.put("data", mapToResponseDTO(cotActualizada));
             res.put("status", HttpStatus.OK);
-
-        } catch (Exception e) {
-            res.put("mensaje", "Error al actualizar: " + e.getMessage());
+        } catch (EntityNotFoundException | IllegalArgumentException e) {
+            res.put("mensaje", "Error al actualizar cotización: " + e.getMessage());
             res.put("status", HttpStatus.BAD_REQUEST);
+        } catch (Exception e) {
+            res.put("mensaje", "Error inesperado al actualizar cotización.");
+            res.put("error", e.getMessage());
+            res.put("status", HttpStatus.INTERNAL_SERVER_ERROR);
         }
+
         res.put("fecha", new Date());
         return ResponseEntity.status((HttpStatus) res.get("status")).body(res);
     }
+
 
     @Override
     public ResponseEntity<Map<String, Object>> eliminarCotizacion(Long id) {

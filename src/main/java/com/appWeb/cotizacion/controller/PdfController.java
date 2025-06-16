@@ -35,7 +35,7 @@ public class PdfController {
         ByteArrayInputStream bis = cotizacionPdfGeneratorService.generarCotizacionPDF(cotizacion);
 
         HttpHeaders headers = new HttpHeaders();
-        headers.add("Content-Disposition", "inline; filename=cotizacion_" + cotizacion.getNumeroCotizacion() + ".pdf");
+        headers.add("Content-Disposition", "inline; filename=" + cotizacion.getNumeroCotizacion()+"-"+ cotizacion.getVehiculo().getPlaca()+"-"+cotizacion.getVehiculo().getMarca() + ".pdf");
 
         return ResponseEntity.ok()
                 .headers(headers)

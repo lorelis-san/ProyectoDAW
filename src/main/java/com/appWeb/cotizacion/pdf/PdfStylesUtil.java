@@ -5,6 +5,7 @@ import com.appWeb.cotizacion.model.cotizacion.DetalleCotizacion;
 import com.lowagie.text.*;
 import com.lowagie.text.Font;
 
+import com.lowagie.text.Image;
 import com.lowagie.text.Rectangle;
 import com.lowagie.text.pdf.*;
 import org.springframework.stereotype.Component;
@@ -60,7 +61,15 @@ public class PdfStylesUtil {
         Font content = FontFactory.getFont(FUENTE, 9);
         for (DetalleCotizacion d : c.getDetalles()) {
             table.addCell(new PdfPCell(new Phrase(d.getProducto().getName(), content)));
-            table.addCell(new PdfPCell(new Phrase("img", content))); // mejorar esto si deseas mostrar imágenes
+            try {
+                Image img = Image.getInstance(d.getProducto().getImageUrl());
+                img.scaleToFit(50, 50);
+                PdfPCell imageCell = new PdfPCell(img, true);
+                table.addCell(imageCell);
+            } catch (Exception e) {
+                table.addCell(new PdfPCell(new Phrase("Imagen no disponible")));
+            }
+
             table.addCell(new PdfPCell(new Phrase(d.getCantidad().toString(), content)));
             table.addCell(new PdfPCell(new Phrase("S/ " + d.getPrecioUnitario(), content)));
             table.addCell(new PdfPCell(new Phrase("S/ " + d.getSubtotal(), content)));
@@ -78,8 +87,9 @@ public class PdfStylesUtil {
         Font reg = FontFactory.getFont(FUENTE, 10);
 
         table.addCell(celda("Subtotal:", bold, false));
-        table.addCell(celda("S/ " + c.getSubtotal(), reg, true));
-
+        table.addCell(celda(String.format("S/ %.2f", c.getSubtotal()), reg, true));
+        table.addCell(celda("IGV (18%): ",bold, false));
+        table.addCell(celda("S/."+ c.getIgv(), reg, true));
         table.addCell(celda("TOTAL:", bold, false));
         table.addCell(celda("S/ " + c.getTotal(), bold, true));
 

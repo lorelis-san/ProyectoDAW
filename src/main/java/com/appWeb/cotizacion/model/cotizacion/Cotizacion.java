@@ -57,7 +57,7 @@ public class Cotizacion {
     @JoinColumn(name = "vehiculo_id", nullable = false)
     private Vehicle vehiculo;
 
-    @OneToMany(mappedBy = "cotizacion", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @OneToMany(mappedBy = "cotizacion", cascade = CascadeType.ALL, orphanRemoval = true, fetch = FetchType.LAZY)
     @Builder.Default
     private List<DetalleCotizacion> detalles = new ArrayList<>();
 
@@ -90,7 +90,7 @@ public class Cotizacion {
                 .map(DetalleCotizacion::getSubtotal)
                 .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-        this.igv = subtotal.multiply(new BigDecimal("0"));
+        this.igv = subtotal.multiply(new BigDecimal("0.18"));
         this.total = subtotal.add(igv);
     }
 
