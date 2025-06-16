@@ -13,7 +13,7 @@ import java.math.BigDecimal;
 @Entity
 @Table(name = "detalle_cotizacion", indexes = {
         @Index(name = "idx_cotizacion_producto", columnList = "cotizacion_id, producto_id"),
-        @Index(name = "idx_detalle_enabled", columnList = "enabled")
+//        @Index(name = "idx_detalle_enabled", columnList = "enabled")
 })
 @Getter
 @Setter
@@ -42,8 +42,8 @@ public class DetalleCotizacion {
     @Column(name = "subtotal", precision = 10, scale = 2, nullable = false)
     private BigDecimal subtotal = BigDecimal.ZERO;
 
-    @Column(nullable = false)
-    private Boolean enabled = true;
+//    @Column(nullable = false)
+//    private Boolean enabled = true;
 
 
     // Constructor personalizado

@@ -168,15 +168,17 @@ public class CotizacionServiceImpl implements CotizacionService {
             cot.setVehiculo(vehicleRepository.findById(dto.getVehiculoId())
                     .orElseThrow(() -> new RuntimeException("Vehículo no encontrado")));
 
-            String username = SecurityContextHolder.getContext().getAuthentication().getName();
-            User user = userRepository.findByUsername(username)
+            String email = SecurityContextHolder.getContext().getAuthentication().getName();
+            User user = userRepository.findOneByEmail(email)
                     .orElseThrow(() -> new RuntimeException("Usuario no autenticado"));
+
             cot.setUser(user);
 
             cot.setObservaciones(dto.getObservaciones());
             cot.setEstado(EstadoCotizacion.CREADA);
 
             for (DetalleCotizacionDTO det : dto.getDetalles()) {
+                System.out.println("Producto ID recibido: " + det.getProductoId());
                 Products prod = productsRepository.findById(det.getProductoId())
                         .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
                 DetalleCotizacion detalle = new DetalleCotizacion(cot, prod, det.getCantidad(), det.getPrecioUnitario());
@@ -189,7 +191,8 @@ public class CotizacionServiceImpl implements CotizacionService {
             res.put("mensaje", "Cotización registrada");
             res.put("data", mapToResponseDTO(guardada));
             res.put("status", HttpStatus.CREATED);
-
+        } catch (RuntimeException ex) {
+            throw ex; // dejar que Spring maneje el rollback y el error
         } catch (Exception e) {
             res.put("mensaje", "Error al registrar cotización: " + e.getMessage());
             res.put("status", HttpStatus.BAD_REQUEST);
@@ -214,31 +217,31 @@ public class CotizacionServiceImpl implements CotizacionService {
             detalleCotizacionRepository.deleteAllByCotizacionId(cot.getId());
 
             // Usuario que modifica
-            String username = SecurityContextHolder.getContext().getAuthentication().getName();
-            User user = userRepository.findByUsername(username)
+            String email = SecurityContextHolder.getContext().getAuthentication().getName();
+            User user = userRepository.findOneByEmail(email)
                     .orElseThrow(() -> new RuntimeException("Usuario no autenticado"));
             cot.setUserModificador(user);
 
-            // Detalles nuevos
-            List<DetalleCotizacion> nuevos = new ArrayList<>();
+//            // Detalles nuevos
+//            List<DetalleCotizacion> nuevos = new ArrayList<>();
+//            for (DetalleCotizacionDTO d : dto.getDetalles()) {
+//                Products prod = productsRepository.findById(d.getProductoId())
+//                        .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
+//                DetalleCotizacion det = new DetalleCotizacion(cot, prod, d.getCantidad(), d.getPrecioUnitario());
+//                nuevos.add(det);
+//            }
+
+            // Agregar nuevos detalles con lógica de negocio
             for (DetalleCotizacionDTO d : dto.getDetalles()) {
                 Products prod = productsRepository.findById(d.getProductoId())
                         .orElseThrow(() -> new RuntimeException("Producto no encontrado"));
                 DetalleCotizacion det = new DetalleCotizacion(cot, prod, d.getCantidad(), d.getPrecioUnitario());
-                nuevos.add(det);
+                cot.agregarDetalle(det); // clave: lógica de agregación interna
             }
 
-            detalleCotizacionRepository.saveAll(nuevos);
-
-            BigDecimal nuevoSubtotal = nuevos.stream()
-                    .map(DetalleCotizacion::getSubtotal)
-                    .reduce(BigDecimal.ZERO, BigDecimal::add);
-
+            cot.calcularTotales();
             cot.setFechaModificacion(LocalDateTime.now());
             cot.setEstado(EstadoCotizacion.MODIFICADA);
-            cot.setSubtotal(nuevoSubtotal);
-            cot.setIgv(BigDecimal.ZERO);
-            cot.setTotal(nuevoSubtotal);
             cot.setObservaciones(dto.getObservaciones());
 
             cotizacionRepository.save(cot);
@@ -264,11 +267,9 @@ public class CotizacionServiceImpl implements CotizacionService {
             Cotizacion cotizacion = optional.get();
 
             // Obtener usuario autenticado
-            String username = SecurityContextHolder.getContext().getAuthentication().getName();
-            User user = userRepository.findByUsername(username)
-                    .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
-
-            detalleCotizacionService.deshabilitarDetallesPorCotizacion(cotizacion.getId());
+            String email = SecurityContextHolder.getContext().getAuthentication().getName();
+            User user = userRepository.findOneByEmail(email)
+                    .orElseThrow(() -> new RuntimeException("Usuario no autenticado"));
 
             // Cambiar estado a ELIMINADA
             cotizacion.setEstado(EstadoCotizacion.ELIMINADA);
