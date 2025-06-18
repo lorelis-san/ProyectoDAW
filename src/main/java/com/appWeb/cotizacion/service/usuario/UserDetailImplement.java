@@ -50,7 +50,8 @@ public class UserDetailImplement implements UserDetails{
 	}
 
 	public String getUser() {
-		return usuario.getUsername();
+		String nombre = usuario.getNombre() +" "+ usuario.getApellido();
+		return nombre;
 	}
 	
 }

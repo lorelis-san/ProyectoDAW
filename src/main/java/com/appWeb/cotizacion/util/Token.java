@@ -14,7 +14,7 @@ import java.util.Map;
 public class Token {
 
 	private final static String TOKEN_SECRETO = "RaFRLGx9vIL0e9GJUZQ5iKCXgM6SUvwT";
-	private final static Long TOKEN_DURACION = 1_000_000L;
+	private final static Long TOKEN_DURACION = 60*60L;
 	
 	public static String crearToken(String user, String email) {
 		long expiracionTiempo = TOKEN_DURACION * 1_000;

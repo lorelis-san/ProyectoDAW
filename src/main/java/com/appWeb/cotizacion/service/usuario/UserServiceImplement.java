@@ -9,6 +9,8 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+
 @Service
 public class UserServiceImplement implements UserDetailsService{
 
@@ -22,5 +24,10 @@ public class UserServiceImplement implements UserDetailsService{
 		
 		return new UserDetailImplement(usuario);
 	}
-		
+
+	public User registrarUsuario(User usuario) {
+		return dao.save(usuario);
+	}
+
+
 }
