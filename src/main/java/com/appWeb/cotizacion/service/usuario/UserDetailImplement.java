@@ -53,5 +53,10 @@ public class UserDetailImplement implements UserDetails{
 		String nombre = usuario.getNombre() +" "+ usuario.getApellido();
 		return nombre;
 	}
+
+	public String getRole(){
+		String role= String.valueOf(usuario.getRole().getName());
+		return role;
+	}
 	
 }

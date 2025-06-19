@@ -16,13 +16,14 @@ public class Token {
 	private final static String TOKEN_SECRETO = "RaFRLGx9vIL0e9GJUZQ5iKCXgM6SUvwT";
 	private final static Long TOKEN_DURACION = 60*60L;
 	
-	public static String crearToken(String user, String email) {
+	public static String crearToken(String user, String email, String role) {
 		long expiracionTiempo = TOKEN_DURACION * 1_000;
 		Date expiracionFecha = new Date(System.currentTimeMillis() + expiracionTiempo);
 		
 		Map<String, Object> map = new HashMap<>();
 		map.put("nombre", user);
-		
+		map.put("role", role);
+
 		return Jwts.builder()
 				.setSubject(email)
 				.setExpiration(expiracionFecha)

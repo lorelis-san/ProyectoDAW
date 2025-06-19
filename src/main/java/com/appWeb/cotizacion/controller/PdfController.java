@@ -30,10 +30,8 @@ public class PdfController {
 
     @GetMapping("/cotizacion/{id}")
     public ResponseEntity<InputStreamResource> generarPDF(@PathVariable Long id) {
-        Cotizacion cotizacion = cotizacionService.obtenerPorId(id);  // Usa el servicio
-
+        Cotizacion cotizacion = cotizacionService.obtenerPorId(id);
         ByteArrayInputStream bis = cotizacionPdfGeneratorService.generarCotizacionPDF(cotizacion);
-
         HttpHeaders headers = new HttpHeaders();
         headers.add("Content-Disposition", "inline; filename=" + cotizacion.getNumeroCotizacion()+"-"+ cotizacion.getVehiculo().getPlaca()+"-"+cotizacion.getVehiculo().getMarca() + ".pdf");
 

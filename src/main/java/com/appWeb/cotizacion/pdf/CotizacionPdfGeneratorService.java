@@ -23,18 +23,18 @@ public class CotizacionPdfGeneratorService {
     private final PdfUtils pdfUtils;
 
     public ByteArrayInputStream generarCotizacionPDF(Cotizacion cotizacion) {
-        Document document = new Document(PageSize.A4, 60, 60, 170, 130);
+        Document document = new Document(PageSize.A4, 60, 60, 190, 130);
         ByteArrayOutputStream out = new ByteArrayOutputStream();
 
         try {
             PdfWriter writer = PdfWriter.getInstance(document, out);
-            Image background = pdfUtils.cargarFondo("static/img/membrete_fondo.jpg");
+            Image background = pdfUtils.cargarFondo("static/img/plantilla.jpg");
             writer.setPageEvent(new PdfUtils.BackgroundPageEvent(background));
 
             document.open();
             String nombreUsuario = cotizacion.getUser().getNombre() + " " + cotizacion.getUser().getApellido();
 
-            styles.agregarTitulo(document, "COTIZACIÓN");
+
             styles.agregarInformacionGeneral(document, cotizacion, nombreUsuario);
             styles.agregarTablaProductos(document, cotizacion);
             styles.agregarTotales(document, cotizacion);
