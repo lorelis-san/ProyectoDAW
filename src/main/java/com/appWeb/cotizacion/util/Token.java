@@ -5,6 +5,7 @@ import io.jsonwebtoken.JwtException;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.authority.SimpleGrantedAuthority;
 
 import java.util.Collections;
 import java.util.Date;
@@ -42,8 +43,15 @@ public class Token {
 					.getBody();
 			
 			String email = claims.getSubject();
-			
-			return new UsernamePasswordAuthenticationToken(email, null, Collections.emptyList());
+			String role = claims.get("role", String.class);
+			if (email != null && role != null) {
+				return new UsernamePasswordAuthenticationToken(
+						email,
+						null,
+						Collections.singletonList(new SimpleGrantedAuthority(role))
+				);
+			}
+			return null;
 		} catch (JwtException e) {
 			return null;
 		}

@@ -6,6 +6,7 @@ import com.appWeb.cotizacion.jwt.JWTAuthorizationFilter;
 import lombok.AllArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -33,11 +34,15 @@ public class SecurityConfig {
                 .cors()
                 .and()
                 .csrf().disable()
-                .authorizeHttpRequests()
-                .requestMatchers("/login", "/api/usuario").permitAll()
-                .anyRequest()
-                .authenticated()
-                .and()
+                .authorizeHttpRequests(auth -> auth
+                        .requestMatchers("/login", "/api/usuario").permitAll()
+                        .requestMatchers("/api/suppliers/**", "/api/categorias/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.POST, "/api/productos/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.PUT, "/api/productos/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/productos/**").hasRole("ADMIN")
+                        .requestMatchers(HttpMethod.DELETE, "/api/cotizaciones/**").hasRole("ADMIN")
+                        .anyRequest().authenticated()
+                )
                 .httpBasic()
                 .and()
                 .sessionManagement()
