@@ -153,6 +153,25 @@ public class SupplierServiceImpl implements SupplierService {
         }
     }
 
+    @Override
+    public ResponseEntity<Map<String, Object>> buscarPorRucORazonSocialEnabledTrue(String termino) {
+        Map<String, Object> response = new HashMap<>();
+        List<SupplierDTO> lista = supplierRepository
+                .buscarPorRucORazonSocial(termino)
+                .stream().map(this::convertToDTO)
+                .collect(Collectors.toList());
+        if (!lista.isEmpty()) {
+            response.put("mensaje", "Resultados encontrados");
+            response.put("data", lista);
+            response.put("status", HttpStatus.OK);
+        } else {
+            response.put("mensaje", "No se encontraron coincidencias");
+            response.put("status", HttpStatus.NOT_FOUND);
+        }
+        response.put("fecha", new Date());
+        return ResponseEntity.status((HttpStatus) response.get("status")).body(response);
+    }
+
 
     @Override
     public SupplierDTO convertToDTO(Supplier supplier) {

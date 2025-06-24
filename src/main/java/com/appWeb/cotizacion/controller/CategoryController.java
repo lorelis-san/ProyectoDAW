@@ -41,6 +41,11 @@ public class CategoryController {
         return categoryService.updateCategory(categoryDTO);
     }
 
+    @GetMapping("/buscar")
+    public ResponseEntity<Map<String, Object>> buscar(@RequestParam String termino) {
+        return categoryService.getByNameSearch(termino);
+    }
+
     //  Eliminar (inhabilitar) categoría
     @PutMapping("/eliminar/{id}")
     public ResponseEntity<Map<String, Object>> eliminarCategoria(@PathVariable Long id) {

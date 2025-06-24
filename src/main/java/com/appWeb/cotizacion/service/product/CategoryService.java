@@ -14,4 +14,5 @@ public interface CategoryService {
     ResponseEntity<Map<String, Object>> getByName(String name);
     ResponseEntity<Map<String, Object>> getAllCategory();
 
+    ResponseEntity<Map<String, Object>> getByNameSearch(String term);
 }

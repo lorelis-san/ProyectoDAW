@@ -54,4 +54,10 @@ public class VehicleController {
     public ResponseEntity<Map<String, Object>> buscarPorPlaca(@RequestParam String placa) {
         return vehicleService.getByPlaca(placa);
     }
+
+    @GetMapping("/buscar")
+    public ResponseEntity<Map<String, Object>> buscar(@RequestParam String termino) {
+        return vehicleService.buscarPorPlacaMarcaModelo(termino);
+    }
+
 }

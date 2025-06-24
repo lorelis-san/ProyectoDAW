@@ -192,6 +192,26 @@ public class ClientServiceImpl implements ClientService {
         return ResponseEntity.ok(respuesta);
     }
 
+    @Override
+    public ResponseEntity<Map<String, Object>> buscarPorDocumentoONombre(String termino) {
+        Map<String, Object> res = new HashMap<>();
+        List<ClientDTO> lista = clientRepository.buscarPorDocumentoONombre(termino)
+                .stream()
+                .map(this::convertToDTO)
+                .toList();
+
+        if (lista.isEmpty()) {
+            res.put("mensaje", "No se encontraron coincidencias");
+            res.put("status", HttpStatus.NOT_FOUND);
+        } else {
+            res.put("mensaje", "Resultados encontrados");
+            res.put("data", lista);
+            res.put("status", HttpStatus.OK);
+        }
+
+        res.put("fecha", new Date());
+        return ResponseEntity.status((HttpStatus) res.get("status")).body(res);
+    }
 
 
 }

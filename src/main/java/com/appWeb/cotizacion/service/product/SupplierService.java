@@ -17,7 +17,7 @@ public interface SupplierService {
     ResponseEntity<Map<String, Object>> updateSupplier(Long id, SupplierDTO supplierDTO);
     ResponseEntity<Map<String, Object>> deleteSupplier(Long id);
     ResponseEntity<Map<String, Object>> getSuppliersEnabled();
-
+    ResponseEntity<Map<String, Object>> buscarPorRucORazonSocialEnabledTrue(String termino);
     // Métodos de conversión
     SupplierDTO convertToDTO(Supplier supplier);
     Supplier convertToEntity(SupplierDTO supplierDTO);

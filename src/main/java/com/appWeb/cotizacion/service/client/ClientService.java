@@ -15,5 +15,6 @@ public interface ClientService {
     ResponseEntity<Map<String, Object>> deleteClient(Long id);
     ResponseEntity<Map<String, Object>> getClientByDocumentNumber(String documentNumber);
 
+    ResponseEntity<Map<String, Object>> buscarPorDocumentoONombre(String termino);
 }
 

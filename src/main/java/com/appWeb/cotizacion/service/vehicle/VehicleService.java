@@ -21,4 +21,5 @@ public interface VehicleService {
     ResponseEntity<Map<String, Object>> getByPlaca(String placa);
 
 
+    ResponseEntity<Map<String, Object>> buscarPorPlacaMarcaModelo(String termino);
 }

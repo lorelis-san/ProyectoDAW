@@ -11,7 +11,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -176,4 +175,26 @@ public class VehicleServiceImpl implements VehicleService {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).body(respuesta);
         }
     }
+
+    @Override
+    public ResponseEntity<Map<String, Object>> buscarPorPlacaMarcaModelo(String termino) {
+        Map<String, Object> res = new HashMap<>();
+        List<VehicleDTO> lista = vehicleRepository.buscarPorPlacaMarcaModelo(termino)
+                .stream()
+                .map(this::convertToDTO)
+                .toList();
+
+        if (lista.isEmpty()) {
+            res.put("mensaje", "No se encontraron coincidencias");
+            res.put("status", HttpStatus.NOT_FOUND);
+        } else {
+            res.put("mensaje", "Vehículos encontrados");
+            res.put("data", lista);
+            res.put("status", HttpStatus.OK);
+        }
+
+        res.put("fecha", new Date());
+        return ResponseEntity.status((HttpStatus) res.get("status")).body(res);
+    }
+
 }

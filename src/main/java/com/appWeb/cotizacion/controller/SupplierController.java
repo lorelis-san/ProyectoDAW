@@ -33,7 +33,10 @@ public class SupplierController {
         return supplierService.getSupplierByRuc(ruc);
     }
 
-
+    @GetMapping("/buscar")
+    public ResponseEntity<Map<String, Object>> buscar(@RequestParam String termino){
+        return supplierService.buscarPorRucORazonSocialEnabledTrue(termino);
+    }
     // Registrar proveedor
     @PostMapping
     public ResponseEntity<Map<String, Object>> registrar(@RequestBody SupplierDTO supplierDTO) {

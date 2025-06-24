@@ -21,6 +21,10 @@ public class ClientController {
     public ResponseEntity<Map<String, Object>> listarClientes() {
         return clientService.getAllClientsEnabled();
     }
+    @GetMapping("/buscar")
+    public ResponseEntity<Map<String, Object>> buscar(@RequestParam String termino) {
+        return clientService.buscarPorDocumentoONombre(termino);
+    }
 
     // Obtener cliente por ID
     @GetMapping("/{id}")

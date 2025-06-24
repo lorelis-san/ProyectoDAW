@@ -11,7 +11,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
-import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -169,4 +168,23 @@ public class CategoryServiceImpl implements CategoryService {
         res.put("data", convertToDTO(c));
         return ResponseEntity.ok(res);
     }
+
+    @Override
+    public ResponseEntity<Map<String, Object>> getByNameSearch(String term) {
+        Map<String, Object> res = new HashMap<>();
+        List<CategoryDTO> results = categoryRepository.buscarPorNombre(term)
+                .stream().map(this::convertToDTO).toList();
+
+        if (results.isEmpty()) {
+            res.put("mensaje", "No se encontraron coincidencias");
+            res.put("status", HttpStatus.NOT_FOUND);
+        } else {
+            res.put("mensaje", "Resultados encontrados");
+            res.put("data", results);
+            res.put("status", HttpStatus.OK);
+        }
+        res.put("fecha", new Date());
+        return ResponseEntity.status((HttpStatus) res.get("status")).body(res);
+    }
+
 }
