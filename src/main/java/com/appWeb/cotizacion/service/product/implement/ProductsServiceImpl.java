@@ -50,7 +50,7 @@ public class ProductsServiceImpl implements ProductsService {
         product.setSalePrice(dto.getSalePrice());
         product.setImageUrl(dto.getImageUrl());
         product.setSede(dto.getSede());
-
+        product.setEnabled(dto.getEnabled());
         if (dto.getCategoryProductId() != null) {
             Optional<Category> categoryOptional = categoryRepository.findById(dto.getCategoryProductId());
             categoryOptional.ifPresent(product::setCategoryproduct);
@@ -80,7 +80,7 @@ public class ProductsServiceImpl implements ProductsService {
         dto.setSalePrice(product.getSalePrice());
         dto.setImageUrl(product.getImageUrl());
         dto.setSede(product.getSede());
-
+        dto.setEnabled(product.getEnabled());
         if (product.getCategoryproduct() != null) {
             dto.setCategoryProductId(product.getCategoryproduct().getId());
         }
