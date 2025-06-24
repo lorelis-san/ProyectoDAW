@@ -24,6 +24,7 @@ public interface CotizacionService {
 
     ResponseEntity<Map<String, Object>> eliminarCotizacion(Long id);
 
+    ResponseEntity<Map<String, Object>> buscarPorTermino(String termino);
 }
 
 

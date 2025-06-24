@@ -26,7 +26,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.*;
@@ -294,6 +293,31 @@ public class CotizacionServiceImpl implements CotizacionService {
         Long count = cotizacionRepository.count();
         return "COT-" + String.format("%03d", count + 1);
     }
+
+    @Override
+    public ResponseEntity<Map<String, Object>> buscarPorTermino(String termino) {
+        Map<String, Object> res = new HashMap<>();
+
+        List<Cotizacion> lista = cotizacionRepository.buscarPorTermino(termino);
+
+        if (lista.isEmpty()) {
+            res.put("mensaje", "No se encontraron cotizaciones");
+            res.put("status", HttpStatus.NOT_FOUND);
+        } else {
+            List<CotizacionResponseDTO> dtos = lista.stream()
+                    .map(this::mapToResponseDTO) // tu método ya existente
+                    .toList();
+            res.put("mensaje", "Cotizaciones encontradas");
+            res.put("data", dtos);
+            res.put("status", HttpStatus.OK);
+        }
+
+        res.put("fecha", new Date());
+        return ResponseEntity.status((HttpStatus) res.get("status")).body(res);
+    }
+
+
+
 
 
 }

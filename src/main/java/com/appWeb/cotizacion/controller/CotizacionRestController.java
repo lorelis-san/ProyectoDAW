@@ -94,4 +94,10 @@ public class CotizacionRestController {
         return cotizacionService.eliminarCotizacion(id);
     }
 
+
+    @GetMapping("/buscar")
+    public ResponseEntity<Map<String, Object>> buscar(@RequestParam String termino) {
+        return cotizacionService.buscarPorTermino(termino);
+    }
+
 }
