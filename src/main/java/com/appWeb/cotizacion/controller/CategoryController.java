@@ -16,25 +16,21 @@ public class CategoryController {
     @Autowired
     private CategoryService categoryService;
 
-    // Listar todas las categorías habilitadas
     @GetMapping
     public ResponseEntity<Map<String, Object>> listarCategorias() {
         return categoryService.getAllCategory();
     }
 
-    // Buscar por ID
     @GetMapping("/{id}")
     public ResponseEntity<Map<String, Object>> buscarCategoriaPorId(@PathVariable Long id) {
         return categoryService.getCategoryById(id);
     }
 
-    // Agregar categoría
     @PostMapping
     public ResponseEntity<Map<String, Object>> agregarCategoria(@RequestBody CategoryDTO categoryDTO) {
         return categoryService.saveCategory(categoryDTO);
     }
 
-    // Editar categoría
     @PutMapping("/{id}")
     public ResponseEntity<Map<String, Object>> editarCategoria(@RequestBody CategoryDTO categoryDTO, @PathVariable Long id) {
         categoryDTO.setId(id);
@@ -46,7 +42,6 @@ public class CategoryController {
         return categoryService.getByNameSearch(termino);
     }
 
-    //  Eliminar (inhabilitar) categoría
     @PutMapping("/eliminar/{id}")
     public ResponseEntity<Map<String, Object>> eliminarCategoria(@PathVariable Long id) {
         return categoryService.deleteCategory(id);

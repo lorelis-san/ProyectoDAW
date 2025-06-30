@@ -15,6 +15,6 @@ public class CotizacionDTO {
     private Long vehiculoId;
     private List<DetalleCotizacionDTO> detalles;
     private String observaciones;
-//    private String usuarioCreador;
+
 
 }

@@ -33,7 +33,7 @@ public class ProductDTO {
     private String imageUrl;
 
     @NotNull
-    private Long categoryProductId; // Referencia a la Categoria
+    private Long categoryProductId;
 
     @NotNull
     private Long supplierProductId;

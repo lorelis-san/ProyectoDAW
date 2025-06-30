@@ -90,24 +90,9 @@ public class PdfGeneratorService {
         infoTable.addCell(celdaInfo("Fecha:", labelFont, true));
         infoTable.addCell(celdaInfo(cotizacion.getFecha().format(DateTimeFormatter.ofPattern("dd/MM/yyyy")), valueFont, false));
 
-        Font sectionFont = FontFactory.getFont(FontFactory.HELVETICA_BOLD, 11, Color.WHITE);
-//        Color sectionBgColor = new Color(31, 28, 79);
-//
-//        PdfPCell clienteTitle = new PdfPCell(new Phrase("DATOS DE CLIENTE", sectionFont));
-//        clienteTitle.setColspan(4);
-//        clienteTitle.setBackgroundColor(sectionBgColor);
-//        clienteTitle.setHorizontalAlignment(Element.ALIGN_LEFT);
-//        clienteTitle.setPadding(8f);
-//        infoTable.addCell(clienteTitle);
-
         String tipoDoc = cotizacion.getCliente().getTypeDocument().toUpperCase();
         infoTable.addCell(celdaInfo("Tipo Documento:", labelFont, true));
         infoTable.addCell(celdaInfo(tipoDoc, valueFont, false));
-
-//        infoTable.addCell(celdaInfo("Correo:", labelFont, true));
-//        infoTable.addCell(celdaInfo(cotizacion.getCliente().getEmail(), valueFont, false));
-//        infoTable.addCell(celdaInfo("Celular:", labelFont, true));
-//        infoTable.addCell(celdaInfo(cotizacion.getCliente().getPhoneNumber(), valueFont, false));
 
         infoTable.addCell(celdaInfo("Placa del Vehículo:", labelFont, true));
         infoTable.addCell(celdaInfo(cotizacion.getVehiculo().getPlaca().toUpperCase(), valueFont, false));
@@ -117,10 +102,6 @@ public class PdfGeneratorService {
         infoTable.addCell(celdaInfo("Marca:", labelFont, true));
         infoTable.addCell(celdaInfo(cotizacion.getVehiculo().getMarca(), valueFont, false));
 
-//        infoTable.addCell(celdaInfo("Modelo:", labelFont, true));
-//        PdfPCell modeloCell = celdaInfo(cotizacion.getVehiculo().getModelo(), valueFont, false);
-//        modeloCell.setColspan(3);
-//        infoTable.addCell(modeloCell);
         String nombreCliente = tipoDoc.equalsIgnoreCase("RUC")
                 ? cotizacion.getCliente().getBusinessName()
                 : cotizacion.getCliente().getFirstName() + " " + cotizacion.getCliente().getLastName();

@@ -42,11 +42,7 @@ public class DetalleCotizacion {
     @Column(name = "subtotal", precision = 10, scale = 2, nullable = false)
     private BigDecimal subtotal = BigDecimal.ZERO;
 
-//    @Column(nullable = false)
-//    private Boolean enabled = true;
 
-
-    // Constructor personalizado
     public DetalleCotizacion(Cotizacion cotizacion, Products producto, Integer cantidad, BigDecimal precioUnitario) {
         this.cotizacion = cotizacion;
         this.producto = producto;

@@ -15,6 +15,6 @@ public class DetalleCotizacionDTO {
     private Integer cantidad;
     private BigDecimal precioUnitario;
     private BigDecimal subtotal;
-//    private Boolean enabled = true;
+
 
 }

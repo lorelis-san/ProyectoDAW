@@ -169,7 +169,7 @@ public class ProductsServiceImpl implements ProductsService {
     public ResponseEntity<Map<String, Object>> buscarPorNombreOCodigoEnabledTrue(String termino) {
         Map<String, Object> response = new HashMap<>();
         List<ProductDTO> lista = productsRepository
-                .findByNameContainingIgnoreCaseAndEnabledTrueOrCodContainingIgnoreCaseAndEnabledTrue(termino, termino)
+                .buscarPorNombreOCodigo(termino)
                 .stream().map(this::convertToDTO)
                 .collect(Collectors.toList());
 
@@ -311,9 +311,6 @@ public class ProductsServiceImpl implements ProductsService {
         if (dto.getCod() == null || dto.getCod().trim().isEmpty()) {
             throw new IllegalArgumentException("El código del producto es obligatorio");
         }
-//        if (dto.getId() == null && productsRepository.existsByCod(dto.getCod())) {
-//            throw new IllegalArgumentException("El código ya esta registrado");
-//        }
         if (dto.getId() == null && productsRepository.existsByCodAndEnabledTrue(dto.getCod())) {
             throw new IllegalArgumentException("El código ya está registrado");
         }

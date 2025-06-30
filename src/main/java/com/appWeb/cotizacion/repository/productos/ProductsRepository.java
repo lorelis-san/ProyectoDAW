@@ -2,6 +2,8 @@ package com.appWeb.cotizacion.repository.productos;
 
 import com.appWeb.cotizacion.model.productos.Products;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.util.Arrays;
@@ -17,6 +19,8 @@ public interface ProductsRepository extends JpaRepository<Products, Long> {
     List<Products> findByEnabledTrue();
     Optional<Products> findByIdAndEnabledTrue(Long id);
     boolean existsByCodAndEnabledTrue(String cod);
-    List<Products> findByNameContainingIgnoreCaseAndEnabledTrueOrCodContainingIgnoreCaseAndEnabledTrue(String name, String cod);
+    @Query("SELECT p FROM Products p WHERE (LOWER(p.name) LIKE LOWER(CONCAT('%', :termino, '%')) " +
+            "OR LOWER(p.cod) LIKE LOWER(CONCAT('%', :termino, '%'))) AND p.enabled = true")
+    List<Products> buscarPorNombreOCodigo(@Param("termino") String termino);
 
 }

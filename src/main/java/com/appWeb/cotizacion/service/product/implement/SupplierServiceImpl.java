@@ -121,7 +121,7 @@ public class SupplierServiceImpl implements SupplierService {
         } else {
             Supplier supplier = optionalSupplier.get();
             supplier.setEnabled(false);  // Solo lo deshabilita
-            supplierRepository.save(supplier);  // Guarda el cambio
+            supplierRepository.save(supplier);
 
             res.put("mensaje", "Proveedor deshabilitado correctamente");
             res.put("status", HttpStatus.OK);

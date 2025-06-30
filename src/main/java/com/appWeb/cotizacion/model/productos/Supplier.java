@@ -27,8 +27,8 @@ public class Supplier {
     @Column(nullable = false, length = 100)
     private String name;
 
-    @NotBlank(message = "El RUC/NIT es obligatorio")
-    @Size(max = 11, message = "El RUC/NIT no puede exceder 11 caracteres")
+    @NotBlank(message = "El RUC es obligatorio")
+    @Size(max = 11, message = "El RUC no puede exceder 11 caracteres")
     @Column(unique = true, nullable = false, length = 11)
     private String ruc; // RUC o NIT
 

@@ -31,7 +31,7 @@ public class ImageMigrationCommandRunner implements CommandLineRunner {
             imageMigrationService.migrateBatchImages(batchSize);
 
         } catch (Exception e) {
-            System.err.println("❌ Error durante la migración automática: " + e.getMessage());
+            System.err.println("Error durante la migración automática: " + e.getMessage());
             e.printStackTrace();
         }
     }

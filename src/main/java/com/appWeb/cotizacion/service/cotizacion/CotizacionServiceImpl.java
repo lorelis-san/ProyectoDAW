@@ -40,7 +40,6 @@ public class CotizacionServiceImpl implements CotizacionService {
     private final VehicleRepository vehicleRepository;
     private final ClientRepository clientRepository;
     private final UserRepository userRepository;
-    private final DetalleCotizacionService detalleCotizacionService;
 
 
     @Override
@@ -120,7 +119,6 @@ public class CotizacionServiceImpl implements CotizacionService {
         List<Cotizacion> lista = cotizacionRepository.findByEstadoNot(
                 EstadoCotizacion.ELIMINADA, Sort.by(Sort.Direction.DESC, "fecha")
         );
-//        List<Cotizacion> lista = cotizacionRepository.findAll(Sort.by(Sort.Direction.DESC, "fecha"));
         List<CotizacionResponseDTO> dtos = lista.stream().map(this::mapToResponseDTO).toList();
 
         res.put("mensaje", dtos.isEmpty() ? "No hay cotizaciones registradas" : "Lista de cotizaciones");
@@ -134,7 +132,6 @@ public class CotizacionServiceImpl implements CotizacionService {
     public ResponseEntity<Map<String, Object>> obtenerCotizacionPorId(Long id) {
         Map<String, Object> res = new HashMap<>();
         Optional<Cotizacion> cot = cotizacionRepository.findByIdAndEstadoNot(id, EstadoCotizacion.ELIMINADA);
-//        Optional<Cotizacion> cot = cotizacionRepository.findById(id);
         if (cot.isPresent()) {
             res.put("mensaje", "Cotización encontrada");
             res.put("data", mapToResponseDTO(cot.get()));
@@ -305,7 +302,7 @@ public class CotizacionServiceImpl implements CotizacionService {
             res.put("status", HttpStatus.NOT_FOUND);
         } else {
             List<CotizacionResponseDTO> dtos = lista.stream()
-                    .map(this::mapToResponseDTO) // tu método ya existente
+                    .map(this::mapToResponseDTO)
                     .toList();
             res.put("mensaje", "Cotizaciones encontradas");
             res.put("data", dtos);

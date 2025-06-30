@@ -16,13 +16,12 @@ public class SupplierController {
     @Autowired
     private SupplierService supplierService;
 
-    // Listar todos los proveedores
     @GetMapping
     public ResponseEntity<Map<String, Object>> listarTodos() {
         return supplierService.getSuppliersEnabled();
     }
 
-    // Obtener proveedor por ID
+
     @GetMapping("/{id}")
     public ResponseEntity<Map<String, Object>> obtenerPorId(@PathVariable Long id) {
         return supplierService.getSupplierById(id);
@@ -37,19 +36,18 @@ public class SupplierController {
     public ResponseEntity<Map<String, Object>> buscar(@RequestParam String termino){
         return supplierService.buscarPorRucORazonSocialEnabledTrue(termino);
     }
-    // Registrar proveedor
     @PostMapping
     public ResponseEntity<Map<String, Object>> registrar(@RequestBody SupplierDTO supplierDTO) {
         return supplierService.saveSupplier(supplierDTO);
     }
 
-    // Actualizar proveedor
+
     @PutMapping("/{id}")
     public ResponseEntity<Map<String, Object>> actualizar(@PathVariable Long id, @RequestBody SupplierDTO supplierDTO) {
         return supplierService.updateSupplier(id, supplierDTO);
     }
 
-    // Eliminar proveedor
+
     @DeleteMapping("/{id}")
     public ResponseEntity<Map<String, Object>> eliminar(@PathVariable Long id) {
         return supplierService.deleteSupplier(id);

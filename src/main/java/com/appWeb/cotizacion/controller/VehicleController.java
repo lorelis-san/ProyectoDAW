@@ -17,25 +17,21 @@ public class VehicleController {
     @Autowired
     private VehicleService vehicleService;
 
-    // Listar todos los vehículos habilitados
     @GetMapping
     public ResponseEntity<Map<String, Object>> listarVehiculos() {
         return vehicleService.getAllVehicles();
     }
 
-    // Obtener vehículo por ID
     @GetMapping("/{id}")
     public ResponseEntity<Map<String, Object>> obtenerVehiculoPorId(@PathVariable Long id) {
         return vehicleService.getVehicleById(id);
     }
 
-    // Crear nuevo vehículo
     @PostMapping
     public ResponseEntity<Map<String, Object>> crearVehiculo(@Validated @RequestBody VehicleDTO vehicleDTO) {
         return vehicleService.saveVehicle(vehicleDTO);
     }
 
-    // Actualizar vehículo
     @PutMapping("/{id}")
     public ResponseEntity<Map<String, Object>> actualizarVehiculo(@RequestBody VehicleDTO vehicleDTO,
                                                                   @PathVariable Long id) {

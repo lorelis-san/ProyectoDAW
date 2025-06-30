@@ -33,10 +33,10 @@ public class Client {
     private String typeDocument;
 
     @Column(nullable = false, unique = true)
-    private String documentNumber;  // Unique field for document (DNI or RUC)
+    private String documentNumber;
 
     @Column(nullable = true)
-    private String businessName;  // Only applies if it's a RUC
+    private String businessName;
 
     @Column(nullable = false)
     private String phoneNumber;
