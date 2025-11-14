@@ -34,6 +34,8 @@ public interface CotizacionService {
     ResponseEntity<Map<String, Object>> clientesTop();
     ResponseEntity<Map<String, Object>> cotizacionesPendientes();
     ResponseEntity<Map<String, Object>> montoAprobadasMes();
+
+    ResponseEntity<Map<String, Object>> graficoCotizacionesPorEstado();
 }
 
 

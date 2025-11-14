@@ -53,6 +53,8 @@ public interface CotizacionRepository extends JpaRepository<Cotizacion, Long> {
     @Procedure(procedureName = "sp_MontoAprobadasMes")
     List<Object[]> montoAprobadasMes();
 
+    @Procedure(procedureName = "sp_GraficoCotizacionesPorEstado")
+    List<Object[]> graficoCotizacionesPorEstado();
 
 
 }

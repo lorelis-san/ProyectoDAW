@@ -488,6 +488,31 @@ public ResponseEntity<Map<String, Object>> actualizarEstadoCotizacion(Long id, S
         return ResponseEntity.ok(response);
     }
 
+/// //////
+
+@Override
+@Transactional(readOnly = true)
+public ResponseEntity<Map<String, Object>> graficoCotizacionesPorEstado() {
+    List<Object[]> lista = cotizacionRepository.graficoCotizacionesPorEstado();
+    Map<String, Object> response = new HashMap<>();
+
+    List<Map<String, Object>> data = new ArrayList<>();
+    for (Object[] row : lista) {
+        Map<String, Object> item = new HashMap<>();
+        item.put("estado", row[0]);           // ESTADO
+        item.put("cantidad", row[1]);         // CANTIDAD
+        item.put("montoTotal", row[2]);       // MONTO_TOTAL
+        data.add(item);
+    }
+
+    response.put("mensaje", "Cotizaciones por estado para gráfico");
+    response.put("data", data);
+    response.put("status", HttpStatus.OK);
+    response.put("fecha", new Date());
+
+    return ResponseEntity.ok(response);
+}
+
 
 }
 

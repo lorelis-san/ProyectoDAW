@@ -131,6 +131,9 @@ public ResponseEntity<Map<String, Object>> actualizarEstado(
         @RequestParam String estado) {
     return cotizacionService.actualizarEstadoCotizacion(id, estado);
 }
-
+    @GetMapping("/grafico-estados")
+    public ResponseEntity<Map<String, Object>> getGraficoCotizacionesPorEstado() {
+        return cotizacionService.graficoCotizacionesPorEstado();
+    }
 
 }
