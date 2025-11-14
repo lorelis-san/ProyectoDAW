@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.Map;
 
 @RestController
@@ -89,5 +90,47 @@ public class CotizacionRestController {
     public ResponseEntity<Map<String, Object>> buscar(@RequestParam String termino) {
         return cotizacionService.buscarPorTermino(termino);
     }
+
+    ////////////////////////////////////////////////////////////////////////////////
+
+    @GetMapping("/por-estado")
+    public ResponseEntity<Map<String, Object>> porEstado() {
+        return cotizacionService.cotizacionesPorEstado();
+    }
+
+    @GetMapping("/ingresos-mes")
+    public ResponseEntity<Map<String, Object>> ingresosPorMes() {
+        return cotizacionService.ingresosPorMes();
+    }
+
+    @GetMapping("/ventas-usuario")
+    public ResponseEntity<Map<String, Object>> ventasPorUsuario() {
+        return cotizacionService.ventasPorUsuario();
+    }
+
+    @GetMapping("/clientes-top")
+    public ResponseEntity<Map<String, Object>> clientesTop() {
+        return cotizacionService.clientesTop();
+    }
+
+    @GetMapping("/pendientes")
+    public ResponseEntity<Map<String, Object>> pendientes() {
+        return cotizacionService.cotizacionesPendientes();
+    }
+
+    @GetMapping("/aprobadas-mes")
+    public ResponseEntity<Map<String, Object>> aprobasMes() {
+        return cotizacionService.montoAprobadasMes();
+    }
+//////////////////
+
+
+@PutMapping("/{id}/estado")
+public ResponseEntity<Map<String, Object>> actualizarEstado(
+        @PathVariable Long id,
+        @RequestParam String estado) {
+    return cotizacionService.actualizarEstadoCotizacion(id, estado);
+}
+
 
 }

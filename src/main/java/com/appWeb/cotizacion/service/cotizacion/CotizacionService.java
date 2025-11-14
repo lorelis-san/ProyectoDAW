@@ -25,6 +25,15 @@ public interface CotizacionService {
     ResponseEntity<Map<String, Object>> eliminarCotizacion(Long id);
 
     ResponseEntity<Map<String, Object>> buscarPorTermino(String termino);
+
+    ResponseEntity<Map<String, Object>> actualizarEstadoCotizacion(Long id, String estado);
+
+    ResponseEntity<Map<String, Object>> cotizacionesPorEstado();
+    ResponseEntity<Map<String, Object>> ingresosPorMes();
+    ResponseEntity<Map<String, Object>> ventasPorUsuario();
+    ResponseEntity<Map<String, Object>> clientesTop();
+    ResponseEntity<Map<String, Object>> cotizacionesPendientes();
+    ResponseEntity<Map<String, Object>> montoAprobadasMes();
 }
 
 

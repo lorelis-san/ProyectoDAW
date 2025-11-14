@@ -1,9 +1,9 @@
 package com.appWeb.cotizacion.enums;
 
 public enum EstadoCotizacion {
+    PENDIENTE("Pendiente"),
     MODIFICADA("Modificada"),
     ENVIADA("Enviada"),
-    CREADA("Creada"),
     APROBADA("Aprobada"),
     RECHAZADA("Rechazada"),
     ELIMINADA("Eliminada"),

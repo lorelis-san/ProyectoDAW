@@ -5,6 +5,7 @@ import com.appWeb.cotizacion.model.cotizacion.Cotizacion;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.jpa.repository.query.Procedure;
 import org.springframework.data.repository.query.Param;
 
 import java.util.List;
@@ -28,6 +29,29 @@ public interface CotizacionRepository extends JpaRepository<Cotizacion, Long> {
         LOWER(u.nombre) LIKE LOWER(CONCAT('%', :term, '%'))
 """)
     List<Cotizacion> buscarPorTermino(@Param("term") String term);
+
+
+
+    @Procedure(procedureName = "sp_ListarCotizaciones")
+    List<Object[]> listarCotizaciones();
+
+    @Procedure(procedureName = "sp_CotizacionesPorEstado")
+    List<Object[]> cotizacionesPorEstado();
+
+    @Procedure(procedureName = "sp_IngresosPorMes")
+    List<Object[]> ingresosPorMes();
+
+    @Procedure(procedureName = "sp_VentasPorUsuario")
+    List<Object[]> ventasPorUsuario();
+
+    @Procedure(procedureName = "sp_ClientesTopCotizaciones")
+    List<Object[]> clientesTop();
+
+    @Procedure(procedureName = "sp_CotizacionesPendientes")
+    List<Object[]> cotizacionesPendientes();
+
+    @Procedure(procedureName = "sp_MontoAprobadasMes")
+    List<Object[]> montoAprobadasMes();
 
 
 

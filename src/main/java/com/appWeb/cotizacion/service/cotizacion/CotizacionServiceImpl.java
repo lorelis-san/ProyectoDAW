@@ -18,7 +18,7 @@ import com.appWeb.cotizacion.repository.productos.ProductsRepository;
 import com.appWeb.cotizacion.repository.user.UserRepository;
 import com.appWeb.cotizacion.repository.vehicle.VehicleRepository;
 import jakarta.persistence.EntityNotFoundException;
-import jakarta.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Sort;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -40,7 +40,6 @@ public class CotizacionServiceImpl implements CotizacionService {
     private final VehicleRepository vehicleRepository;
     private final ClientRepository clientRepository;
     private final UserRepository userRepository;
-
 
     @Override
     public CotizacionResponseDTO mapToResponseDTO(Cotizacion cotizacion) {
@@ -171,7 +170,7 @@ public class CotizacionServiceImpl implements CotizacionService {
             cot.setUser(user);
 
             cot.setObservaciones(dto.getObservaciones());
-            cot.setEstado(EstadoCotizacion.CREADA);
+            cot.setEstado(EstadoCotizacion.PENDIENTE);
 
             for (DetalleCotizacionDTO det : dto.getDetalles()) {
                 System.out.println("Producto ID recibido: " + det.getProductoId());
@@ -283,7 +282,46 @@ public class CotizacionServiceImpl implements CotizacionService {
         res.put("fecha", new Date());
         return ResponseEntity.status((HttpStatus) res.get("status")).body(res);
     }
+/// /////////
+///
+@Override
+public ResponseEntity<Map<String, Object>> actualizarEstadoCotizacion(Long id, String estado) {
+    Map<String, Object> res = new HashMap<>();
+    Optional<Cotizacion> optional = cotizacionRepository.findById(id);
 
+    if (optional.isPresent()) {
+        Cotizacion cotizacion = optional.get();
+        EstadoCotizacion nuevoEstado;
+        try {
+            nuevoEstado = EstadoCotizacion.valueOf(estado.toUpperCase());
+        } catch (IllegalArgumentException e) {
+            res.put("mensaje", "Estado inválido: " + estado);
+            res.put("fecha", new Date());
+            return ResponseEntity.badRequest().body(res);
+        }
+
+        // Obtener usuario autenticado
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        User user = userRepository.findOneByEmail(email)
+                .orElseThrow(() -> new RuntimeException("Usuario no autenticado"));
+
+        // Cambiar estado y registrar modificador
+        cotizacion.setEstado(nuevoEstado);
+        cotizacion.setFechaModificacion(LocalDateTime.now());
+        cotizacion.setUserModificador(user);
+
+        cotizacionRepository.save(cotizacion);
+
+        res.put("mensaje", "Cotización actualizada a " + nuevoEstado.getDescripcion());
+        res.put("data", mapToResponseDTO(cotizacion)); // <-- usar DTO en lugar de la entidad
+        res.put("fecha", new Date());
+        return ResponseEntity.ok(res);
+    } else {
+        res.put("mensaje", "Cotización no encontrada con ID: " + id);
+        res.put("fecha", new Date());
+        return ResponseEntity.status(HttpStatus.NOT_FOUND).body(res);
+    }
+}
 
 
     private String generarNumeroCotizacion() {
@@ -313,8 +351,142 @@ public class CotizacionServiceImpl implements CotizacionService {
         return ResponseEntity.status((HttpStatus) res.get("status")).body(res);
     }
 
+////////////////////////
+///
+    @Override
+    @Transactional(readOnly = true)
+    public ResponseEntity<Map<String, Object>> cotizacionesPorEstado() {
+        List<Object[]> lista = cotizacionRepository.cotizacionesPorEstado();
+        Map<String, Object> response = new HashMap<>();
+
+        List<Map<String, Object>> data = new ArrayList<>();
+        for (Object[] row : lista) {
+            Map<String, Object> item = new HashMap<>();
+            item.put("estado", row[0]);
+            item.put("cantidad", row[1]);
+            item.put("montoTotal", row[2]);
+            data.add(item);
+        }
+
+        response.put("mensaje", "Cotizaciones agrupadas por estado");
+        response.put("data", data);
+        response.put("status", HttpStatus.OK);
+        response.put("fecha", new Date());
+        return ResponseEntity.ok(response);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public ResponseEntity<Map<String, Object>> ingresosPorMes() {
+        List<Object[]> lista = cotizacionRepository.ingresosPorMes();
+        Map<String, Object> response = new HashMap<>();
+
+        List<Map<String, Object>> data = new ArrayList<>();
+        for (Object[] row : lista) {
+            Map<String, Object> item = new HashMap<>();
+            item.put("mes", row[0]);
+            item.put("total", row[1]);
+            item.put("cotizacionesPorMes", row[2]);
+            data.add(item);
+        }
+
+        response.put("mensaje", "Ingresos agrupados por mes");
+        response.put("data", data);
+        response.put("status", HttpStatus.OK);
+        response.put("fecha", new Date());
+        return ResponseEntity.ok(response);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public ResponseEntity<Map<String, Object>> ventasPorUsuario() {
+        List<Object[]> lista = cotizacionRepository.ventasPorUsuario();
+        Map<String, Object> response = new HashMap<>();
+
+        List<Map<String, Object>> data = new ArrayList<>();
+        for (Object[] row : lista) {
+            Map<String, Object> item = new HashMap<>();
+            item.put("usuario", row[0]);
+            item.put("cotizaciones", row[1]);
+            item.put("total", row[2]);
+            data.add(item);
+        }
+
+        response.put("mensaje", "Ventas totales por usuario");
+        response.put("data", data);
+        response.put("status", HttpStatus.OK);
+        response.put("fecha", new Date());
+        return ResponseEntity.ok(response);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public ResponseEntity<Map<String, Object>> clientesTop() {
+        List<Object[]> lista = cotizacionRepository.clientesTop();
+        Map<String, Object> response = new HashMap<>();
+
+        List<Map<String, Object>> data = new ArrayList<>();
+        for (Object[] row : lista) {
+            Map<String, Object> item = new HashMap<>();
+            item.put("cliente", row[0]);
+            item.put("totalCotizaciones", row[1]);
+            item.put("montoTotal", row[2]); // Esto es el SUM(co.total)
+            data.add(item);
+        }
+
+        response.put("mensaje", "Clientes con más cotizaciones");
+        response.put("data", data);
+        response.put("status", HttpStatus.OK);
+        response.put("fecha", new Date());
+        return ResponseEntity.ok(response);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public ResponseEntity<Map<String, Object>> cotizacionesPendientes() {
+        List<Object[]> lista = cotizacionRepository.cotizacionesPendientes();
+        Map<String, Object> response = new HashMap<>();
+
+        List<Map<String, Object>> data = new ArrayList<>();
+        for (Object[] row : lista) {
+            Map<String, Object> item = new HashMap<>();
+            item.put("numeroCotizacion", row[0]);
+            item.put("fecha", row[1]);
+            item.put("cliente", row[2]);
+            item.put("total", row[3]);
+            item.put("estado", row[4]);
+            data.add(item);
+        }
 
 
+        response.put("mensaje", "Cotizaciones pendientes o sin aprobar");
+        response.put("data", data);
+        response.put("status", HttpStatus.OK);
+        response.put("fecha", new Date());
+
+        return ResponseEntity.ok(response);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public ResponseEntity<Map<String, Object>> montoAprobadasMes() {
+        List<Object[]> lista = cotizacionRepository.montoAprobadasMes();
+        Map<String, Object> response = new HashMap<>();
+
+        Map<String, Object> data = new HashMap<>();
+        if (!lista.isEmpty()) {
+            Object[] row = lista.get(0);
+            data.put("montoAprobadoMes", row[0]);
+            data.put("cantidadAprobadas", row[1]);
+        }
+
+        response.put("mensaje", "Monto total de cotizaciones aprobadas del mes");
+        response.put("data", data);
+        response.put("status", HttpStatus.OK);
+        response.put("fecha", new Date());
+
+        return ResponseEntity.ok(response);
+    }
 
 
 }
