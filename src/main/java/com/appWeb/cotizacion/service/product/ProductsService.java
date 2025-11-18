@@ -18,4 +18,6 @@ public interface ProductsService {
     ResponseEntity<Map<String, Object>> deleteProduct(Long id);
     ResponseEntity<Map<String, Object>> buscarPorNombreOCodigo(String termino);
     ResponseEntity<Map<String, Object>> getProductsEnabled();
+
+    List<Object[]> productosMasVendidos(Integer top);
 }

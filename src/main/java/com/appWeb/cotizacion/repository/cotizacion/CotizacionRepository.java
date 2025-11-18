@@ -25,12 +25,11 @@ public interface CotizacionRepository extends JpaRepository<Cotizacion, Long> {
         LOWER(c.numeroCotizacion) LIKE LOWER(CONCAT('%', :term, '%')) OR
         LOWER(c.estado) LIKE LOWER(CONCAT('%', :term, '%')) OR
         LOWER(cli.documentNumber) LIKE LOWER(CONCAT('%', :term, '%')) OR
+        LOWER(cli.name) LIKE LOWER(CONCAT('%', :term, '%')) OR
         LOWER(veh.placa) LIKE LOWER(CONCAT('%', :term, '%')) OR
         LOWER(u.nombre) LIKE LOWER(CONCAT('%', :term, '%'))
 """)
     List<Cotizacion> buscarPorTermino(@Param("term") String term);
-
-
 
     @Procedure(procedureName = "sp_ListarCotizaciones")
     List<Object[]> listarCotizaciones();

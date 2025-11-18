@@ -348,4 +348,9 @@ public class ProductsServiceImpl implements ProductsService {
             throw new IllegalArgumentException("La sede seleccionada no es válida");
         }
     }
+
+    @Override
+    public List<Object[]> productosMasVendidos(Integer top) {
+        return productsRepository.productosMasVendidos(top);
+    }
 }

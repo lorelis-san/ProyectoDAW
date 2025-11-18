@@ -64,4 +64,32 @@ public class ProductsController {
     public ResponseEntity<Map<String, Object>> eliminarProducto(@PathVariable Long id) {
         return productsService.deleteProduct(id);
     }
+
+
+    @GetMapping("/mas-vendidos")
+    public ResponseEntity<?> productosMasVendidos(
+            @RequestParam(defaultValue = "5") Integer top
+    ) {
+
+        List<Object[]> lista = productsService.productosMasVendidos(top);
+
+        List<Map<String, Object>> data = new ArrayList<>();
+
+        for (Object[] row : lista) {
+            Map<String, Object> item = new HashMap<>();
+            item.put("productoId", row[0]);
+            item.put("nombreProducto", row[1]);
+            item.put("cantidadVendida", row[2]);
+            item.put("montoGenerado", row[3]);
+            data.add(item);
+        }
+
+        Map<String, Object> response = new HashMap<>();
+        response.put("mensaje", "Productos más vendidos");
+        response.put("data", data);
+        response.put("status", HttpStatus.OK);
+        response.put("fecha", new Date());
+
+        return ResponseEntity.ok(response);
+    }
 }

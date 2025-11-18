@@ -3,6 +3,7 @@ package com.appWeb.cotizacion.repository.productos;
 import com.appWeb.cotizacion.model.productos.Products;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.jpa.repository.query.Procedure;
 import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
@@ -22,5 +23,8 @@ public interface ProductsRepository extends JpaRepository<Products, Long> {
     @Query("SELECT p FROM Products p WHERE (LOWER(p.name) LIKE LOWER(CONCAT('%', :termino, '%')) " +
             "OR LOWER(p.cod) LIKE LOWER(CONCAT('%', :termino, '%'))) AND p.enabled = true")
     List<Products> buscarPorNombreOCodigo(@Param("termino") String termino);
+
+    @Procedure(procedureName = "sp_ProductosMasVendidos")
+    List<Object[]> productosMasVendidos(@Param("top") Integer top);
 
 }
