@@ -43,9 +43,6 @@ public class CotizacionServiceImpl implements CotizacionService {
     private final ClientRepository clientRepository;
     private final UserRepository userRepository;
 
-    // =====================================================
-    // MAPPER DTO
-    // =====================================================
     @Override
     public CotizacionResponseDTO mapToResponseDTO(Cotizacion cotizacion) {
 
@@ -122,9 +119,6 @@ public class CotizacionServiceImpl implements CotizacionService {
         return dto;
     }
 
-    // ===========================================================
-    // LISTAR
-    // ===========================================================
     @Override
     public ResponseEntity<Map<String, Object>> listarCotizaciones() {
         Map<String, Object> res = new HashMap<>();
@@ -146,9 +140,6 @@ public class CotizacionServiceImpl implements CotizacionService {
         return ResponseEntity.status((HttpStatus) res.get("status")).body(res);
     }
 
-    // ===========================================================
-    // OBTENER POR ID
-    // ===========================================================
     @Override
     public ResponseEntity<Map<String, Object>> obtenerCotizacionPorId(Long id) {
         Map<String, Object> res = new HashMap<>();
@@ -175,9 +166,6 @@ public class CotizacionServiceImpl implements CotizacionService {
                 .orElseThrow(() -> new RuntimeException("Cotización no encontrada con ID: " + id));
     }
 
-    // ===========================================================
-    // CREAR COTIZACIÓN
-    // ===========================================================
     @Transactional
     @Override
     public ResponseEntity<Map<String, Object>> crearCotizacion(CotizacionDTO dto) {
@@ -235,9 +223,6 @@ public class CotizacionServiceImpl implements CotizacionService {
         return ResponseEntity.status((HttpStatus) res.get("status")).body(res);
     }
 
-    // ===========================================================
-    // ACTUALIZAR COTIZACIÓN
-    // ===========================================================
     @Transactional
     @Override
     public ResponseEntity<Map<String, Object>> actualizarCotizacion(CotizacionResponseDTO dto) {
@@ -299,9 +284,6 @@ public class CotizacionServiceImpl implements CotizacionService {
         return ResponseEntity.status((HttpStatus) res.get("status")).body(res);
     }
 
-    // ===========================================================
-    // ELIMINAR (CAMBIAR ESTADO)
-    // ===========================================================
     @Override
     public ResponseEntity<Map<String, Object>> eliminarCotizacion(Long id) {
         Map<String, Object> res = new HashMap<>();
@@ -336,9 +318,6 @@ public class CotizacionServiceImpl implements CotizacionService {
     }
 
 
-    // ===========================================================
-    // CAMBIAR ESTADO
-    // ===========================================================
     @Override
     public ResponseEntity<Map<String, Object>> actualizarEstadoCotizacion(Long id, String estado) {
 
@@ -383,9 +362,6 @@ public class CotizacionServiceImpl implements CotizacionService {
     }
 
 
-    // ===========================================================
-    // BÚSQUEDA
-    // ===========================================================
     @Override
     public ResponseEntity<Map<String, Object>> buscarPorTermino(String termino) {
         Map<String, Object> res = new HashMap<>();
@@ -406,12 +382,6 @@ public class CotizacionServiceImpl implements CotizacionService {
         return ResponseEntity.status((HttpStatus) res.get("status")).body(res);
     }
 
-
-    // ===========================================================
-    // MÉTODOS USANDO STORED PROCEDURES MODIFICADOS
-    // ===========================================================
-
-    // 1️⃣ Cotizaciones por estado (con cantidad + monto)
     @Override
     @Transactional(readOnly = true)
     public ResponseEntity<Map<String, Object>> cotizacionesPorEstado() {
@@ -438,7 +408,6 @@ public class CotizacionServiceImpl implements CotizacionService {
     }
 
 
-    // 2️⃣ Ingresos por mes
     @Override
     @Transactional(readOnly = true)
     public ResponseEntity<Map<String, Object>> ingresosPorMes() {
@@ -464,8 +433,6 @@ public class CotizacionServiceImpl implements CotizacionService {
         return ResponseEntity.ok(response);
     }
 
-
-    // 3️⃣ Ventas por usuario
     @Override
     @Transactional(readOnly = true)
     public ResponseEntity<Map<String, Object>> ventasPorUsuario() {
@@ -491,8 +458,6 @@ public class CotizacionServiceImpl implements CotizacionService {
         return ResponseEntity.ok(response);
     }
 
-
-    // 4️⃣ Clientes TOP
     @Override
     @Transactional(readOnly = true)
     public ResponseEntity<Map<String, Object>> clientesTop() {
@@ -518,8 +483,6 @@ public class CotizacionServiceImpl implements CotizacionService {
         return ResponseEntity.ok(response);
     }
 
-
-    // 5️⃣ Cotizaciones pendientes
     @Override
     @Transactional(readOnly = true)
     public ResponseEntity<Map<String, Object>> cotizacionesPendientes() {
@@ -547,8 +510,6 @@ public class CotizacionServiceImpl implements CotizacionService {
         return ResponseEntity.ok(response);
     }
 
-
-    // Monto Aprobadas Mes
     @Override
     @Transactional(readOnly = true)
     public ResponseEntity<Map<String, Object>> montoAprobadasMes() {
@@ -573,8 +534,6 @@ public class CotizacionServiceImpl implements CotizacionService {
         return ResponseEntity.ok(response);
     }
 
-
-    // Gráfico cotizaciones por estado
     @Override
     @Transactional(readOnly = true)
     public ResponseEntity<Map<String, Object>> graficoCotizacionesPorEstado() {
@@ -600,10 +559,8 @@ public class CotizacionServiceImpl implements CotizacionService {
         return ResponseEntity.ok(response);
     }
 
-
-    // ===========================================================
     // GENERAR CÓDIGO
-    // ===========================================================
+
     private String generarNumeroCotizacion() {
         Long count = cotizacionRepository.count();
         return "COT-" + String.format("%03d", count + 1);

@@ -91,7 +91,7 @@ public class CotizacionRestController {
         return cotizacionService.buscarPorTermino(termino);
     }
 
-    ////////////////////////////////////////////////////////////////////////////////
+    /// /////////////////////////////////////////////////////////////////////////////
 
     @GetMapping("/por-estado")
     public ResponseEntity<Map<String, Object>> porEstado() {
@@ -122,15 +122,17 @@ public class CotizacionRestController {
     public ResponseEntity<Map<String, Object>> aprobasMes() {
         return cotizacionService.montoAprobadasMes();
     }
-//////////////////
+
+    /// ///////////////
 
 
-@PutMapping("/{id}/estado")
-public ResponseEntity<Map<String, Object>> actualizarEstado(
-        @PathVariable Long id,
-        @RequestParam String estado) {
-    return cotizacionService.actualizarEstadoCotizacion(id, estado);
-}
+    @PutMapping("/{id}/estado")
+    public ResponseEntity<Map<String, Object>> actualizarEstado(
+            @PathVariable Long id,
+            @RequestParam String estado) {
+        return cotizacionService.actualizarEstadoCotizacion(id, estado);
+    }
+
     @GetMapping("/grafico-estados")
     public ResponseEntity<Map<String, Object>> getGraficoCotizacionesPorEstado() {
         return cotizacionService.graficoCotizacionesPorEstado();

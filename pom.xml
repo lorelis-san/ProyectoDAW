@@ -115,8 +115,6 @@
 			<version>9.2.0</version> <!-- O la versión más reciente compatible -->
 		</dependency>
 
-
-		<!-- pom.xml -->
 		<dependency>
 			<groupId>com.github.librepdf</groupId>
 			<artifactId>openpdf</artifactId>
